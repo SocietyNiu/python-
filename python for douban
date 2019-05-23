@@ -1,0 +1,22 @@
+from bs4 import BeautifulSoup
+import requests
+
+k=1
+for i in range(0,10):
+	url = 'https://movie.douban.com/top250?start={}&filter='.format(i*25)
+	response = requests.get(url)
+	soup = BeautifulSoup(response.content.decode('utf-8'),'lxml')
+	top_movies = soup.find('div', id="content")
+	each_movie = top_movies.find('div',class_="item")
+	csv_file = open('data.csv','w',encoding='gbk',newline='')
+	for each_movie in top_movies.find_all('div',class_="item"):
+		each_movie_message = each_movie.find('div',class_='hd')
+		each_movie_name = each_movie.find('span',class_='title')
+		each_s = each_movie.find('div',class_='star')
+		each_star = each_s.find('span',class_='rating_num')
+		each_movie_a = each_movie_message.find_all('a')
+		for search in each_movie_a:
+			link = search.get('href')
+		print(k,each_movie_name.text,each_star.text,link)
+		k+=1
+print("Successful!")
