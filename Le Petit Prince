@@ -1,0 +1,27 @@
+#On est seul aussi chez les hommes, dit le serpent.
+#“人群里也是很寂寞的。”蛇说。
+from bs4 import BeautifulSoup 
+import requests
+import csv 
+
+into_file = open('data.csv','w',encoding='utf-8',newline='')
+writer = csv.writer(into_file)
+writer.writerow(['order','name','author'])
+count = 1
+for i in range(0,10):
+	url = 'https://book.douban.com/top250?start={}'.format(i*25) 
+	response = requests.get(url)
+	soup = BeautifulSoup(response.content.decode('utf-8'),'lxml')
+	books_all=soup.find('div',class_='article')
+	for each_book in books_all.find_all('tr',class_='item'):
+		book_name = each_book.find('div',class_='pl2').find('a').get('title')
+		book_author = each_book.find('p',class_='pl').text
+		flag=0
+		for i in range(0,20):
+			if(book_author[i] == "/") :
+				flag=i
+				break
+
+		writer.writerow([count,book_name,book_author[0:flag]])
+		count+=1
+into_file.close()
